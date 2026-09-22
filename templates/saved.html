@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Saved - PrivSearch</title>
+</head>
+<body>
+  <h1>Saved bookmarks</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <p><a href="/">&larr; Back to search</a></p>
+
+  {% if bookmarks %}
+    <ul>
+      {% for b in bookmarks %}
+      <li>
+        {{ b['title'] }} &mdash;
+        <a href="{{ b['url'] }}" target="_blank">{{ b['url'] }}</a>
+        ({{ b['engine'] }})
+
+        <form action="/delete/{{ b['id'] }}" method="post" style="display:inline">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No bookmarks saved yet.</p>
+  {% endif %}
+</body>
+</html>

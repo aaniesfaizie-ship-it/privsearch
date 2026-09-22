@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+privsearch.db
+.env
+jar.txt
+*.log
+.vscode/
