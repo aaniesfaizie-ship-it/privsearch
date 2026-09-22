@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+import urllib.error
+
 import db
+from search import search_web
 
 app = Flask(__name__)
 
@@ -20,14 +23,10 @@ def search():
     query = request.args.get("q", "")
     results = []
     if query:
-        results = [
-            {"title": query + " - Wikipedia",
-             "url": "https://en.wikipedia.org/wiki/" + query,
-             "engine": "demo"},
-            {"title": query + " - Python docs",
-             "url": "https://docs.python.org/3/search.html?q=" + query,
-             "engine": "demo"},
-        ]
+        try:
+            results = search_web(query)
+        except (urllib.error.URLError, TimeoutError):
+            flash("Search is temporarily unavailable — please try again.", "error")
     return render_template("index.html", query=query, results=results)
 
 
