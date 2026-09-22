@@ -1,40 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Saved - PrivSearch</title>
-</head>
-<body>
-  <h1>Saved bookmarks</h1>
+{% extends "base.html" %}
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+{% block title %}Saved · PrivSearch{% endblock %}
 
-  <p><a href="/">&larr; Back to search</a></p>
+{% block content %}
+<h1>Saved bookmarks</h1>
 
-  {% if bookmarks %}
-    <ul>
-      {% for b in bookmarks %}
-      <li>
-        {{ b['title'] }} &mdash;
-        <a href="{{ b['url'] }}" target="_blank">{{ b['url'] }}</a>
-        ({{ b['engine'] }})
-
-        <form action="/delete/{{ b['id'] }}" method="post" style="display:inline">
-          <button type="submit">Delete</button>
+{% if bookmarks %}
+  <ul class="card-list">
+    {% for b in bookmarks %}
+    <li class="result-card">
+      <h3>{{ b['title'] }}</h3>
+      <p class="url">
+        <a href="{{ b['url'] }}" target="_blank" rel="noopener">{{ b['url'] }}</a>
+      </p>
+      <div class="result-meta">
+        <span class="engine-badge">{{ b['engine'] }}</span>
+        <form action="/delete/{{ b['id'] }}" method="post">
+          <button type="submit" class="btn-delete">Delete</button>
         </form>
-      </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No bookmarks saved yet.</p>
-  {% endif %}
-</body>
-</html>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="empty-state">No bookmarks saved yet. <a href="/">Search</a> and save something.</p>
+{% endif %}
+{% endblock %}
+

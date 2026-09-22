@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PrivSearch{% endblock %}</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <header class="container site-header">
+    <nav>
+      <ul><li><strong>PrivSearch</strong></li></ul>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Search</a></li>
+        <li><a href="{{ url_for('saved') }}">Saved</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-area" aria-live="polite">
+          {% for category, message in messages %}
+            <p class="flash flash-{{ category }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="container site-footer">
+    <small>Privacy-focused search interface · Flask + SQLite</small>
+  </footer>
+
+</body>
+</html>

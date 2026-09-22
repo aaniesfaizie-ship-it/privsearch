@@ -1,40 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>PrivSearch</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Search · PrivSearch{% endblock %}
+
+{% block content %}
+<section class="search-hero">
   <h1>PrivSearch</h1>
-  <p>Search privately...</p>
+  <p>Search privately — no ads, no trackers, no query logging.</p>
 
-  <form action="/search" method="get">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search privately...">
-    <button type="submit">Search</button>
+  <form class="search-form" action="/search" method="get">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search Wikipedia...">
+    <button type="submit" class="btn-primary">Search</button>
   </form>
+</section>
 
-  {% if query %}
-    <p>You searched for: <b>{{ query }}</b></p>
-  {% endif %}
+{% if query %}
+  <p class="search-summary">You searched for: <strong>{{ query }}</strong></p>
+{% endif %}
 
-  {% if results %}
-    <ul>
-      {% for r in results %}
-      <li>
-        <a href="{{ r['url'] }}">{{ r['title'] }}</a>
-        <form action="/save" method="post" style="display:inline">
+{% if results %}
+  <ul class="card-list">
+    {% for r in results %}
+    <li class="result-card">
+      <h3><a href="{{ r['url'] }}" target="_blank" rel="noopener">{{ r['title'] }}</a></h3>
+      <p class="url">{{ r['url'] }}</p>
+      <div class="result-meta">
+        <span class="engine-badge">{{ r['engine'] }}</span>
+        <form action="/save" method="post">
           <input type="hidden" name="title" value="{{ r['title'] }}">
           <input type="hidden" name="url" value="{{ r['url'] }}">
           <input type="hidden" name="engine" value="{{ r['engine'] }}">
-          <button type="submit">Save</button>
+          <button type="submit" class="btn-save">Save</button>
         </form>
-      </li>
-      {% endfor %}
-    </ul>
-  {% elif query %}
-    <p>No results for "{{ query }}".</p>
-  {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% elif query %}
+  <p class="empty-state">No results for "{{ query }}".</p>
+{% endif %}
+{% endblock %}
 
-  <p><a href="/saved">Saved bookmarks</a></p>
-</body>
-</html>

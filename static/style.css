@@ -1,0 +1,100 @@
+:root {
+  --brand: #087f72;
+  --brand-dark: #056258;
+  --surface: #ffffff;
+  --muted: #667085;
+  --border: #e4e7ec;
+  --danger: #b42318;
+  --success: #067647;
+}
+
+body { background: #f7f9fb; }
+
+/* header / footer */
+.site-header { padding-top: 1rem; }
+.site-header strong { color: var(--brand); letter-spacing: -0.02em; }
+
+.site-footer {
+  margin-top: 4rem;
+  padding-bottom: 2rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* search hero */
+.search-hero {
+  max-width: 720px;
+  margin: 3rem auto 2rem;
+  text-align: center;
+}
+.search-hero h1 { margin-bottom: 0.25rem; }
+.search-hero p { color: var(--muted); }
+
+/* search form */
+.search-form { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+.search-form input[type="search"] { flex: 1; }
+
+/* result and bookmark cards */
+.card-list { list-style: none; padding: 0; }
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.result-card h3 { margin: 0 0 0.25rem; }
+.result-card .url {
+  color: var(--muted);
+  font-size: 0.9rem;
+  word-break: break-all;      /* long URLs wrap instead of overflowing */
+}
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.engine-badge {
+  font-size: 0.75rem;
+  color: var(--brand-dark);
+  background: #e6f4f2;
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+
+/* buttons */
+.btn-save, .btn-delete {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.8rem;
+  width: auto;
+  margin: 0;
+}
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* flash messages */
+.flash-area { margin-bottom: 1rem; }
+.flash {
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  margin: 0 0 0.5rem;
+  border: 1px solid transparent;
+}
+.flash-success { background: #ecfdf3; color: var(--success); border-color: #abefc6; }
+.flash-info    { background: #eff8ff; color: #175cd3;      border-color: #b2ddff; }
+.flash-error   { background: #fef3f2; color: var(--danger); border-color: #fecdca; }
+
+/* empty state */
+.empty-state { text-align: center; color: var(--muted); padding: 2rem 0; }
+
+/* keyboard focus visibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
