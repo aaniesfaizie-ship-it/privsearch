@@ -1,16 +1,36 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
 import urllib.error
+from urllib.parse import urlparse
+
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 import db
 from search import search_web
 
-app = Flask(__name__)
+# Read values from the local .env file into the environment.
+load_dotenv()
 
-# Flask needs this to sign the session cookie (where flash messages live).
-# In production this must be a long random value that is NEVER committed to Git.
-app.secret_key = "dev-only-change-me-later"
+# Fail loudly if the secret is missing, instead of running with a weak default.
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key:
+    raise RuntimeError(
+        "SECRET_KEY is missing. Create a .env file with SECRET_KEY=your-secret."
+    )
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = secret_key
+
+# Debug mode is configuration, not a hardcoded truth.
+debug_enabled = os.environ.get("FLASK_DEBUG", "0") == "1"
 
 db.init_db()
+
+
+@app.route("/health")
+def health():
+    """Lightweight endpoint for Docker / monitoring to check the app is up."""
+    return {"status": "ok"}
 
 
 @app.route("/")
@@ -20,13 +40,13 @@ def home():
 
 @app.route("/search")
 def search():
-    query = request.args.get("q", "")
+    query = request.args.get("q", "").strip()[:200]
     results = []
     if query:
         try:
             results = search_web(query)
-        except (urllib.error.URLError, TimeoutError):
-            flash("Search is temporarily unavailable — please try again.", "error")
+        except (urllib.error.URLError, TimeoutError, ValueError):
+            flash("Search is temporarily unavailable. Please try again.", "error")
     return render_template("index.html", query=query, results=results)
 
 
@@ -36,8 +56,13 @@ def save():
     url = request.form.get("url", "").strip()
     engine = request.form.get("engine", "unknown").strip()
 
+    parsed = urlparse(url)
+    valid_url = parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc)
+
     if not title or not url:
         flash("Title and URL are required.", "error")
+    elif not valid_url:
+        flash("Only valid HTTP or HTTPS URLs are allowed.", "error")
     elif db.add_bookmark(title, url, engine):
         flash("Bookmark saved.", "success")
     else:
@@ -60,4 +85,4 @@ def delete(bookmark_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=debug_enabled)

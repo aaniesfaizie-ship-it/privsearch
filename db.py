@@ -1,6 +1,9 @@
+from pathlib import Path
 import sqlite3
 
-DB_NAME = "privsearch.db"
+# Always store the database beside this file, no matter where the app starts from.
+BASE_DIR = Path(__file__).resolve().parent
+DB_NAME = BASE_DIR / "privsearch.db"
 
 
 def get_connection():
@@ -29,7 +32,7 @@ def add_bookmark(title, url, engine="unknown"):
     try:
         conn.execute(
             "INSERT INTO bookmarks (title, url, engine) VALUES (?, ?, ?)",
-            (title, url, engine)
+            (title, url, engine),
         )
         conn.commit()
         return True
@@ -55,13 +58,4 @@ def delete_bookmark(bookmark_id):
 
 if __name__ == "__main__":
     init_db()
-    print("Database ready.")
-
-    add_bookmark("Python Docs", "https://docs.python.org", "google")
-    add_bookmark("Learn Python", "https://learnpython.org", "bing")
-
-    print("\nSaved bookmarks:")
-    for row in get_bookmarks():
-        print(f"  {row['id']}. {row['title']}  ->  {row['url']}  ({row['engine']})")
-   
-
+    print(f"Database ready at: {DB_NAME}")
