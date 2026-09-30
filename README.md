@@ -82,3 +82,7 @@ privsearch/
 ## Notes
 
 Built as part of a 30-day learning project to practise Linux, Python, Flask, SQLite and Git.
+**🔗 Live demo:** https://privsearch-hwcz.onrender.com
+
+> ⚠️ Free tier — sleeps after 15 min idle; first load may take up to a minute.
+> ⚠️ Bookmarks reset on redeploy (ephemeral filesystem) — PostgreSQL migration is next in v2.
