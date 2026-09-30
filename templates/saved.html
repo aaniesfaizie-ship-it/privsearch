@@ -1,29 +1,37 @@
 {% extends "base.html" %}
-
-{% block title %}Saved · PrivSearch{% endblock %}
+{% block title %}Saved — PrivSearch{% endblock %}
 
 {% block content %}
-<h1>Saved bookmarks</h1>
+
+<section class="page-head">
+  <h1 class="hero-title">Saved bookmarks</h1>
+  <p class="hero-sub">{{ bookmarks|length }} saved</p>
+  <a class="btn btn-ghost" href="{{ url_for('home') }}">← New search</a>
+</section>
 
 {% if bookmarks %}
   <ul class="card-list">
     {% for b in bookmarks %}
-    <li class="result-card">
-      <h3>{{ b['title'] }}</h3>
-      <p class="url">
-        <a href="{{ b['url'] }}" target="_blank" rel="noopener">{{ b['url'] }}</a>
-      </p>
-      <div class="result-meta">
-        <span class="engine-badge">{{ b['engine'] }}</span>
-        <form action="/delete/{{ b['id'] }}" method="post">
-          <button type="submit" class="btn-delete">Delete</button>
-        </form>
+    <li class="card result-card">
+      <div class="card-body">
+        <span class="result-title">{{ b['title'] }}</span>
+        <p class="result-url">
+          <a href="{{ b['url'] }}" target="_blank" rel="noopener">{{ b['url'] }}</a>
+        </p>
+        <span class="pill">{{ b['engine'] }}</span>
       </div>
+      <form class="card-action" action="{{ url_for('delete', bookmark_id=b['id']) }}" method="post">
+        <button class="btn btn-danger" type="submit">Delete</button>
+      </form>
     </li>
     {% endfor %}
   </ul>
 {% else %}
-  <p class="empty-state">No bookmarks saved yet. <a href="/">Search</a> and save something.</p>
+  <div class="empty-state">
+    <p class="empty-title">No bookmarks yet</p>
+    <p class="empty-sub">Search for something and hit Save.</p>
+  </div>
 {% endif %}
+
 {% endblock %}
 

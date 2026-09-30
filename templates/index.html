@@ -1,42 +1,79 @@
 {% extends "base.html" %}
-
-{% block title %}Search · PrivSearch{% endblock %}
+{% block title %}PrivSearch — search privately{% endblock %}
 
 {% block content %}
-<section class="search-hero">
-  <h1>PrivSearch</h1>
-  <p>Search privately — no ads, no trackers, no query logging.</p>
 
-  <form class="search-form" action="/search" method="get">
-    <input type="search" name="q" value="{{ query }}" placeholder="Search Wikipedia...">
-    <button type="submit" class="btn-primary">Search</button>
+<section class="hero {% if query %}hero-compact{% endif %}">
+  {% if not query %}
+    <h1 class="hero-title">
+      Search the web<br><span class="hero-title-accent">privately.</span>
+    </h1>
+    <p class="hero-sub">
+      A private search front-end. No ads, no tracking scripts, no query logging.
+    </p>
+  {% else %}
+    <h1 class="hero-title">PrivSearch</h1>
+  {% endif %}
+
+  <form class="search-bar" action="{{ url_for('search') }}" method="get" role="search">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+    <input class="search-input" type="text" name="q"
+           value="{{ query or '' }}" placeholder="Search Wikipedia..."
+           aria-label="Search query" autofocus>
+    <button class="btn btn-primary" type="submit">Search</button>
   </form>
 </section>
 
 {% if query %}
-  <p class="search-summary">You searched for: <strong>{{ query }}</strong></p>
+
+  <section>
+    <h2 class="section-title">Results for “{{ query }}”</h2>
+
+    {% if results %}
+      <ul class="card-list">
+        {% for r in results %}
+        <li class="card result-card">
+          <div class="card-body">
+            <a class="result-title" href="{{ r['url'] }}" target="_blank" rel="noopener">
+              {{ r['title'] }}
+            </a>
+            <p class="result-url">{{ r['url'] }}</p>
+          </div>
+          <form class="card-action" action="{{ url_for('save') }}" method="post">
+            <input type="hidden" name="title" value="{{ r['title'] }}">
+            <input type="hidden" name="url" value="{{ r['url'] }}">
+            <input type="hidden" name="engine" value="{{ r['engine'] }}">
+            <button class="btn btn-ghost" type="submit">Save</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">No results for “{{ query }}”</p>
+        <p class="empty-sub">Try a more general word, or check your spelling.</p>
+      </div>
+    {% endif %}
+  </section>
+
+{% else %}
+
+  <section>
+    <h2 class="section-title">Popular searches</h2>
+    <ul class="card-grid">
+      {% for topic in ['Python', 'Flask', 'SQLite', 'BTS', 'Wikipedia', 'Linux'] %}
+      <li class="card suggestion-card">
+        <a href="{{ url_for('search', q=topic) }}">
+          <span class="suggestion-tag">Topic</span>
+          <span class="suggestion-name">{{ topic }}</span>
+          <span class="suggestion-hint">Search now →</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
 {% endif %}
 
-{% if results %}
-  <ul class="card-list">
-    {% for r in results %}
-    <li class="result-card">
-      <h3><a href="{{ r['url'] }}" target="_blank" rel="noopener">{{ r['title'] }}</a></h3>
-      <p class="url">{{ r['url'] }}</p>
-      <div class="result-meta">
-        <span class="engine-badge">{{ r['engine'] }}</span>
-        <form action="/save" method="post">
-          <input type="hidden" name="title" value="{{ r['title'] }}">
-          <input type="hidden" name="url" value="{{ r['url'] }}">
-          <input type="hidden" name="engine" value="{{ r['engine'] }}">
-          <button type="submit" class="btn-save">Save</button>
-        </form>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
-{% elif query %}
-  <p class="empty-state">No results for "{{ query }}".</p>
-{% endif %}
 {% endblock %}
 
