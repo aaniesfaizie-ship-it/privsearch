@@ -14,13 +14,13 @@
     {% for b in bookmarks %}
     <li class="card result-card">
       <div class="card-body">
-        <span class="result-title">{{ b['title'] }}</span>
+        <span class="result-title">{{ b.title }}</span>
         <p class="result-url">
-          <a href="{{ b['url'] }}" target="_blank" rel="noopener">{{ b['url'] }}</a>
+          <a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.url }}</a>
         </p>
-        <span class="pill">{{ b['engine'] }}</span>
+        <span class="pill">{{ b.engine }}</span>
       </div>
-      <form class="card-action" action="{{ url_for('delete', bookmark_id=b['id']) }}" method="post">
+      <form class="card-action" action="{{ url_for('delete', bookmark_id=b.id) }}" method="post">
         <button class="btn btn-danger" type="submit">Delete</button>
       </form>
     </li>
@@ -32,6 +32,7 @@
     <p class="empty-sub">Search for something and hit Save.</p>
   </div>
 {% endif %}
-
 {% endblock %}
+
+
 

@@ -4,8 +4,9 @@ from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash
+from pathlib import Path
 
-import db
+from db import db, Bookmark
 from search import search_web
 
 # Read values from the local .env file into the environment.
@@ -24,7 +25,16 @@ app.config["SECRET_KEY"] = secret_key
 # Debug mode is configuration, not a hardcoded truth.
 debug_enabled = os.environ.get("FLASK_DEBUG", "0") == "1"
 
-db.init_db()
+# --- Database (SQLAlchemy) -------------------------------------------------
+BASE_DIR = Path(__file__).resolve().parent
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR / 'privsearch.db'}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 
 @app.route("/health")
@@ -36,7 +46,6 @@ def health():
 @app.route("/")
 def home():
     return render_template("index.html", query="", results=[])
-
 
 
 @app.route("/search")
@@ -64,26 +73,49 @@ def save():
         flash("Title and URL are required.", "error")
     elif not valid_url:
         flash("Only valid HTTP or HTTPS URLs are allowed.", "error")
-    elif db.add_bookmark(title, url, engine):
-        flash("Bookmark saved.", "success")
-    else:
+    elif Bookmark.query.filter_by(url=url).first():
         flash("This bookmark is already saved.", "info")
+    else:
+        db.session.add(Bookmark(title=title, url=url, engine=engine))
+        db.session.commit()
+        flash("Bookmark saved.", "success")
 
     return redirect(url_for("saved"))
 
 
 @app.route("/saved")
 def saved():
-    bookmarks = db.get_bookmarks()
+    bookmarks = Bookmark.query.order_by(Bookmark.id.desc()).all()
     return render_template("saved.html", bookmarks=bookmarks)
 
 
 @app.route("/delete/<int:bookmark_id>", methods=["POST"])
 def delete(bookmark_id):
-    db.delete_bookmark(bookmark_id)
-    flash("Bookmark deleted.", "success")
+    bookmark = db.session.get(Bookmark, bookmark_id)
+    if bookmark:
+        db.session.delete(bookmark)
+        db.session.commit()
+        flash("Bookmark deleted.", "success")
     return redirect(url_for("saved"))
 
 
 if __name__ == "__main__":
     app.run(debug=debug_enabled)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
